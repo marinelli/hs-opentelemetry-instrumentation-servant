@@ -7,6 +7,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 -- Adapted from https://github.com/haskell-servant/servant-ekg
 --
@@ -167,6 +168,11 @@ instance ReflectMethod method => HasEndpoint (UVerb method contentType as) where
       _ -> Nothing
     where
       method = reflectMethod (Proxy :: Proxy method)
+#endif
+
+#if MIN_VERSION_servant(0,19,0)
+instance HasEndpoint (ToServantApi api) => HasEndpoint (NamedRoutes api) where
+  getEndpoint _ = getEndpoint (Proxy :: Proxy (ToServantApi api))
 #endif
 
 instance (ReflectMethod method) => HasEndpoint (Stream method status framing ct a) where
